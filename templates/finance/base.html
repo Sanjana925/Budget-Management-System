@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Budget Bee{% endblock %}</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body data-auth="{{ request.user.is_authenticated|yesno:'true,false' }}">
+
+<div class="page-container">
+
+    <!-- Left Sidebar -->
+    <div class="left-column">
+
+        <!-- Logo -->
+        <div class="logo">
+            <img src="{% static 'images/bee.png' %}" alt="Bee Logo">
+            <span>Budget Bee</span>
+        </div>
+
+        <!-- Navigation Menu -->
+    <ul class="menu">
+    <li><a href="{% url 'finance:home' %}" class="{% if active == 'home' %}active{% endif %}">🏠 Home</a></li>
+    <li><a href="{% url 'finance:chart' %}" class="{% if active == 'chart' %}active{% endif %}">⏱️ Chart</a></li>
+    <li><a href="{% url 'finance:accounts' %}" class="{% if active == 'accounts' %}active{% endif %}">💳 Accounts</a></li>
+    <li><a href="{% url 'finance:category' %}" class="{% if active == 'category' %}active{% endif %}">📋 Category</a></li>
+<li>
+    <a href="{% url 'finance:budget_default' %}" 
+       class="{% if active == 'budget' %}active{% endif %}">
+       💰 Budget
+    </a>
+</li>
+
+</ul>
+
+
+       
+
+        <!-- Settings -->
+        <div class="settings">
+            <a href="{% url 'finance:settings' %}">⚙️ Settings</a>
+        </div>
+
+    </div>
+
+    <!-- Center Column / Main Content -->
+    <div class="center-column">
+        {% block content %}
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endblock %}
+    </div>
+
+    <!-- Right Column / Cards -->
+    <div class="right-column">
+
+        <!-- Top Card: User Info -->
+        <div class="card top-card user-card">
+            {% if request.user.is_authenticated %}
+                <div class="user-header">
+                    <span class="username">{{ request.user.username }}</span>
+                    <a href="{% url 'userauths:profile' %}" class="edit-icon">
+                        <img src="{% static 'icons/edit.svg' %}" alt="Edit">
+                    </a>
+                </div>
+                <div class="user-add-button" data-requires-auth>
+                    <img src="{{ request.user.profile_image.url }}" alt="Avatar">
+                </div>
+                <div class="user-account-text">{{ request.user.email }}</div>
+            {% else %}
+                <div class="user-header"><span class="username">Guest</span></div>
+                <a href="{% url 'userauths:login' %}">
+                    <div class="user-add-button">
+                        <img src="{% static 'icons/plus.svg' %}" alt="Add">
+                    </div>
+                </a>
+                <div class="user-account-text">Create account</div>
+            {% endif %}
+
+            <!-- Progress Bars -->
+            <div class="progress-bars">
+                <div class="progress-row">
+                    <span class="label">Earning</span>
+                    <div class="progress">
+                        <div class="progress-fill earning-fill" style="--width: {{ earning_percent }}%;"></div>
+                    </div>
+                </div>
+                <div class="progress-row">
+                    <span class="label">Spent</span>
+                    <div class="progress">
+                        <div class="progress-fill spent-fill" style="--width: {{ spent_percent }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Card: Accounts -->
+        <div class="card bottom-card accounts-card">
+            <h4>Accounts</h4>
+
+            <!-- Scrollable list -->
+            <div class="account-list-container">
+                <ul class="account-list">
+                    {% for account in user_accounts %}
+                        <li>{{ account.icon }} {{ account.name }} - Rs {{ account.balance }}</li>
+                    {% empty %}
+                        <li>No accounts found</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Add Account Button -->
+            <div class="accounts-add-row">
+                {% if request.user.is_authenticated %}
+                    <img src="{% static 'icons/add.svg' %}" alt="Add" class="accounts-add-img">
+                    <a href="{% url 'finance:accounts' %}" class="accounts-add-text">Add account</a>
+                {% else %}
+                    <img src="{% static 'icons/add.svg' %}" alt="Add" class="accounts-add-img" data-requires-auth>
+                    <a href="#" class="accounts-add-text" data-requires-auth>Add account</a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div> 
+
+</div>
+
+<!-- Login Required Popup -->
+<div class="popup-overlay hidden" id="loginRequiredModal">
+    <div class="popup-card">
+        <h3>Login Required</h3>
+        <p>You must be logged in to perform this action.</p>
+
+        <div class="popup-actions">
+            <button type="button" id="closeLoginModal">Cancel</button>
+            <a href="{% url 'userauths:login' %}">
+                <button type="button">Go to Login</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Global JS -->
+<script src="{% static 'js/global.js' %}"></script>
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

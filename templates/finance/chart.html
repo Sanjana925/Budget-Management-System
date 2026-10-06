@@ -1,0 +1,67 @@
+<!-- Charts page -->
+{% extends "finance/base.html" %}
+{% load static %}
+
+{% block title %}Charts - Budget Bee{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chart.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="chart-container">
+
+    <div class="chart-header">
+        <div class="toggle">
+            <a href="#" class="toggle-btn" data-type="expense">Expense</a>
+            <a href="#" class="toggle-btn" data-type="income">Income</a>
+        </div>
+        <div class="chart-month-nav">
+            <button id="prevMonthBtn" class="month-nav">&lt;</button>
+            <span id="currentMonthLabel" data-year="{{ current_year }}" data-month="{{ current_month }}"></span>
+            <button id="nextMonthBtn" class="month-nav">&gt;</button>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-legend-container">
+            <canvas id="chartCanvas"></canvas>
+        </div>
+        <p class="empty-text" id="chartEmpty">No data available</p>
+    </div>
+
+    <div class="table-card">
+        <h3>Statistics</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Expense</th>
+                        <th>Income</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="monthlyTotalsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.incomeDataAll = JSON.parse('{{ income_json|escapejs }}') || {};
+    window.expenseDataAll = JSON.parse('{{ expense_json|escapejs }}') || {};
+    window.monthlyDataAll = JSON.parse('{{ monthly_json|escapejs }}') || [];
+    window.categoryColors = JSON.parse('{{ category_colors_json|escapejs }}') || {};
+
+    window.currentYear = parseInt("{{ current_year|default:'2026' }}", 10);
+    window.currentMonth = parseInt("{{ current_month|default:'1' }}", 10);
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/chart.js' %}"></script>
+{% endblock %}
