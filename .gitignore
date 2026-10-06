@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+
+# Virtual environment
+venv/
+env/
+budgetenv/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Django
+db.sqlite3
+*.sqlite3
+
+# Media uploads
+# Uncomment this if you don't want uploaded user files in Git
+# media/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
